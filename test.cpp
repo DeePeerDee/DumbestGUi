@@ -4,6 +4,10 @@
 
 #include <windows.h>
 
+/**
+ * Define a callback function:
+ * - Most likely a Window Event Listener
+ */
 LRESULT CALLBACK WndProc(
     _In_ HWND hwnd,
     _In_ UINT msg,
@@ -30,6 +34,12 @@ LRESULT CALLBACK WndProc(
   return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
+/**
+ * Define main entry point init:
+ * - Define window class
+ * - Window Handling event
+ * - Message Modal for Catching
+ */
 int WINAPI WinMain(
     _In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
@@ -40,6 +50,9 @@ int WINAPI WinMain(
   HWND hwnd;
   MSG Msg;
 
+  /**
+   * Define Window Class Model
+   */
   wc.cbSize = sizeof(WNDCLASSEX);
   wc.style = 0;
   wc.lpfnWndProc = WndProc;
@@ -53,11 +66,17 @@ int WINAPI WinMain(
   wc.lpszClassName = L"MyWindowClass";
   wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 
+  /**
+   * Register defined model into the OS: Dispatch error message if failed to register to the OS
+   */
   if (!RegisterClassEx(&wc))
   {
     MessageBox(NULL, L"Windows Registration Failed!", L"Error", MB_ICONEXCLAMATION | MB_OK);
   }
 
+  /**
+   * Define a Window handle to prepare for model rendering
+   */
   hwnd = CreateWindowEx(
       WS_EX_CLIENTEDGE,
       L"MyWindowClass",
@@ -72,20 +91,32 @@ int WINAPI WinMain(
       hInstance,
       NULL);
 
+  /**
+   * If unable to allocate memory dispatch error message
+   */
   if (hwnd == NULL)
   {
     MessageBox(NULL, L"Window Creation Failed", L"Error", MB_ICONEXCLAMATION | MB_OK);
     return 0;
   }
 
+  /**
+   * Display Window and update
+   */
   ShowWindow(hwnd, nCmdShow);
   UpdateWindow(hwnd);
 
+  /**
+   * Retrieve a message while not quit, translate and dispatch messages into the window
+   */
   while (GetMessage(&Msg, NULL, 0, 0) > 0)
   {
     TranslateMessage(&Msg);
     DispatchMessage(&Msg);
   }
 
+  /**
+   * Return Word Parameter
+   */
   return Msg.wParam;
 }
