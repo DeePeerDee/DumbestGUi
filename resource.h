@@ -1,3 +1,6 @@
+#ifndef RESOURCE_H
+#define RESOURCE_H
+
 #define IDR_MYMENU 101
 #define IDI_MYICON 201
 #define ID_FILE_EXIT 9001
@@ -8,3 +11,5 @@
 #define IDC_OTHER 1002
 #define ID_DIALOG_SHOW 9003
 #define ID_DIALOG_HIDE 9004
+
+#endif
