@@ -1,7 +1,3 @@
-#ifndef UNICODE
-#define UNICODE
-#endif
-
 #include <windows.h>
 
 /**
@@ -16,6 +12,14 @@ LRESULT CALLBACK WndProc(
 {
   switch (msg)
   {
+  case WM_LBUTTONDOWN:
+  {
+    char fileName[MAX_PATH];
+    HINSTANCE hInstance = GetModuleHandle(NULL);
+
+    GetModuleFileName(hInstance, fileName, MAX_PATH);
+    MessageBox(hwnd, fileName, "Custom Message", MB_OK | MB_ICONINFORMATION);
+  }
   case WM_CLOSE:
     DestroyWindow(hwnd);
     return 0;
@@ -63,7 +67,7 @@ int WINAPI WinMain(
   wc.hCursor = LoadCursor(NULL, IDC_ARROW);
   wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
   wc.lpszMenuName = NULL;
-  wc.lpszClassName = L"MyWindowClass";
+  wc.lpszClassName = "MyWindowClass";
   wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 
   /**
@@ -71,7 +75,11 @@ int WINAPI WinMain(
    */
   if (!RegisterClassEx(&wc))
   {
-    MessageBox(NULL, L"Windows Registration Failed!", L"Error", MB_ICONEXCLAMATION | MB_OK);
+    MessageBox(
+        NULL,
+        "Windows Registration Failed!",
+        "Error",
+        MB_ICONEXCLAMATION | MB_OK);
   }
 
   /**
@@ -79,8 +87,8 @@ int WINAPI WinMain(
    */
   hwnd = CreateWindowEx(
       WS_EX_CLIENTEDGE,
-      L"MyWindowClass",
-      L"Test GUI",
+      "MyWindowClass",
+      "Test GUI",
       WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT,
       CW_USEDEFAULT,
@@ -96,7 +104,11 @@ int WINAPI WinMain(
    */
   if (hwnd == NULL)
   {
-    MessageBox(NULL, L"Window Creation Failed", L"Error", MB_ICONEXCLAMATION | MB_OK);
+    MessageBox(
+        NULL,
+        "Window Creation Failed",
+        "Error",
+        MB_ICONEXCLAMATION | MB_OK);
     return 0;
   }
 
