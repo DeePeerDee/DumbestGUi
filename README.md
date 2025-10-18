@@ -30,6 +30,6 @@ g++ <windres-output>.o test.cpp -o <executable-name>.exe
 - [x] Create a simple window. Even if the dumbest you can create.
 - [x] Learn how to handle event dispatches. (Button Click for Example).
 - [x] Create a custom resource (like Custom Icon) and use as Window and Taskbar Icon.
-- [ ] Create Toolbar and Menu
+- [x] Create Toolbar and Menu
 - [ ] Enhance if possible
 ---

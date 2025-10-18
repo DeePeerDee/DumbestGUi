@@ -1,43 +1,108 @@
 #include <windows.h>
 #include "resource.h"
 
+HWND hToolbar = NULL;
+
+LRESULT CALLBACK ToolDlgProc(
+    _In_ HWND hwnd,
+    _In_ UINT Message,
+    _In_ WPARAM wParam,
+    _In_ LPARAM lParam)
+{
+  switch (Message)
+  {
+  case WM_COMMAND:
+    switch (LOWORD(wParam))
+    {
+    case IDC_PRESS:
+      MessageBox(
+          hwnd,
+          "Hi!",
+          "Message Window 1",
+          MB_OK | MB_ICONEXCLAMATION);
+      break;
+    case IDC_OTHER:
+      MessageBox(
+          hwnd,
+          "Bye!",
+          "Message Window 2",
+          MB_OK | MB_ICONEXCLAMATION);
+      break;
+    }
+    break;
+  default:
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
 /**
  * Define a callback function:
  * - Most likely a Window Event Listener
  */
+
 LRESULT CALLBACK WndProc(
     _In_ HWND hwnd,
     _In_ UINT msg,
     _In_ WPARAM wParam,
     _In_ LPARAM lParam)
 {
+
   switch (msg)
   {
-  case WM_LBUTTONDOWN:
+  case WM_CREATE:
   {
-    char fileName[MAX_PATH];
-    HINSTANCE hInstance = GetModuleHandle(NULL);
+    HICON hIcon, hIconSm;
+    HMENU hMenu, hSubMenu;
 
-    GetModuleFileName(hInstance, fileName, MAX_PATH);
-    MessageBox(hwnd, fileName, "Custom Message", MB_OK | MB_ICONINFORMATION);
+    hToolbar = CreateDialog(
+        GetModuleHandle(NULL),
+        MAKEINTRESOURCE(IDD_TOOLBAR),
+        hwnd,
+        ToolDlgProc);
+
+    hMenu = CreateMenu();
+
+    hSubMenu = CreatePopupMenu();
+    AppendMenu(hSubMenu, MF_STRING, ID_FILE_EXIT, "E&xit");
+    AppendMenu(hMenu, MF_STRING | MF_POPUP, (UINT_PTR)hSubMenu, "&File");
+
+    hSubMenu = CreatePopupMenu();
+    AppendMenu(hSubMenu, MF_STRING, ID_STUFF_GO, "&Go");
+    AppendMenu(hSubMenu, MF_STRING | MF_DISABLED | MF_GRAYED, ID_STUFF_GO_SOMEWHERE_ELSE, "G&o somewhere else");
+    AppendMenu(hMenu, MF_STRING | MF_POPUP, (UINT_PTR)hSubMenu, "&Stuff");
+
+    hSubMenu = CreatePopupMenu();
+    AppendMenu(hSubMenu, MF_STRING, ID_DIALOG_SHOW, "&Show");
+    AppendMenu(hSubMenu, MF_STRING, ID_DIALOG_HIDE, "&Hide");
+    AppendMenu(hMenu, MF_STRING | MF_POPUP, (UINT_PTR)hSubMenu, "&Dialog");
+
+    SetMenu(hwnd, hMenu);
   }
   break;
   case WM_CLOSE:
     DestroyWindow(hwnd);
-    return 0;
+    break;
   case WM_DESTROY:
+    DestroyWindow(hToolbar);
     PostQuitMessage(0);
-    return 0;
-  case WM_PAINT:
-    PAINTSTRUCT ps;
-    HDC hdc = BeginPaint(hwnd, &ps);
-
-    FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-
-    EndPaint(hwnd, &ps);
-    return 0;
+    break;
+  case WM_COMMAND:
+    switch (LOWORD(wParam))
+    {
+    case ID_DIALOG_SHOW:
+      ShowWindow(hToolbar, SW_SHOW);
+      break;
+    case ID_DIALOG_HIDE:
+      ShowWindow(hToolbar, SW_HIDE);
+      break;
+    }
+    break;
+  default:
+    return DefWindowProc(hwnd, msg, wParam, lParam);
   }
-  return DefWindowProc(hwnd, msg, wParam, lParam);
+  return 0;
 }
 
 /**
@@ -65,12 +130,12 @@ int WINAPI WinMain(
   wc.cbClsExtra = 0;
   wc.cbWndExtra = 0;
   wc.hInstance = hInstance;
-  wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MYICON));
+  wc.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_MYICON));
   wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-  wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-  wc.lpszMenuName = NULL;
+  wc.hbrBackground = (HBRUSH)(COLOR_WINDOW);
+  wc.lpszMenuName = MAKEINTRESOURCE(IDR_MYMENU);
   wc.lpszClassName = "MyWindowClass";
-  wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MYICON));
+  wc.hIconSm = (HICON)LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_MYICON), IMAGE_ICON, 16, 16, 0);
 
   /**
    * Register defined model into the OS: Dispatch error message if failed to register to the OS
@@ -88,7 +153,7 @@ int WINAPI WinMain(
    * Define a Window handle to prepare for model rendering
    */
   hwnd = CreateWindowEx(
-      WS_EX_CLIENTEDGE,
+      WS_EX_WINDOWEDGE,
       "MyWindowClass",
       "Test GUI",
       WS_OVERLAPPEDWINDOW,
@@ -125,8 +190,11 @@ int WINAPI WinMain(
    */
   while (GetMessage(&Msg, NULL, 0, 0) > 0)
   {
-    TranslateMessage(&Msg);
-    DispatchMessage(&Msg);
+    if (!IsDialogMessage(hToolbar, &Msg))
+    {
+      TranslateMessage(&Msg);
+      DispatchMessage(&Msg);
+    }
   }
 
   /**
