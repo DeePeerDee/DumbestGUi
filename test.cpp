@@ -1,4 +1,5 @@
 #include <windows.h>
+#include "resource.h"
 
 /**
  * Define a callback function:
@@ -63,12 +64,12 @@ int WINAPI WinMain(
   wc.cbClsExtra = 0;
   wc.cbWndExtra = 0;
   wc.hInstance = hInstance;
-  wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+  wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MYICON));
   wc.hCursor = LoadCursor(NULL, IDC_ARROW);
   wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
   wc.lpszMenuName = NULL;
   wc.lpszClassName = "MyWindowClass";
-  wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+  wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MYICON));
 
   /**
    * Register defined model into the OS: Dispatch error message if failed to register to the OS
