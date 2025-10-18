@@ -21,6 +21,7 @@ LRESULT CALLBACK WndProc(
     GetModuleFileName(hInstance, fileName, MAX_PATH);
     MessageBox(hwnd, fileName, "Custom Message", MB_OK | MB_ICONINFORMATION);
   }
+  break;
   case WM_CLOSE:
     DestroyWindow(hwnd);
     return 0;
